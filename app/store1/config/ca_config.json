@@ -1,0 +1,10 @@
+{
+	"ca_connection_url" : "http://localhost:17054",
+	"ca_admin_id"	: "admin",
+	"mspId"	: "Store1MSP",
+	"channel_name" : " omarketcc",
+	"orderer_url" : "grpc://localhost:7050",
+	"peer_url" : "grpc://localhost:7051",
+	"event_url" : "grpc://localhost:7053",
+	"chaincodeid" : "omarketcc"
+}

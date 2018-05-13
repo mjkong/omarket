@@ -1,0 +1,410 @@
+version: '2'
+
+networks:
+  omarket:
+
+services:
+
+  ca.store1.omarket.com:
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.store1.omarket.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.store1.omarket.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/544f30c1916040bcdb6d08a8d46e40c792bb0df29db99959324fd62a38582bea_sk
+    ports:
+      - "17054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/store1.omarket.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.store1.omarket.com
+    networks:
+      - omarket
+
+  ca.store2.omarket.com:
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.store2.omarket.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.store2.omarket.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/647a82d5e87584cb460befda48e753d3ee439384e1e78cb22cea3f2a6a077109_sk
+    ports:
+      - "27054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/store2.omarket.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.store2.omarket.com
+    networks:
+      - omarket
+
+  ca.omarket.com:
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.omarket.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.omarket.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/779cb38c67871e0b91f16fc619f7d680070e677ec316eb1b65685bd7f10352ed_sk
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/ordererOrganizations/omarket.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.omarket.com
+    networks:
+      - omarket
+
+  zookeeper0:
+    image: hyperledger/fabric-zookeeper
+    restart: always
+    environment:
+      - ZOO_MY_ID=1
+      - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+    ports:
+      - '2181'
+      - '2888'
+      - '3888'
+    networks:
+      - omarket
+
+  zookeeper1:
+    image: hyperledger/fabric-zookeeper
+    restart: always
+    environment:
+      - ZOO_MY_ID=2
+      - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+    ports:
+      - '2181'
+      - '2888'
+      - '3888'
+    networks:
+      - omarket
+
+
+  zookeeper2:
+    image: hyperledger/fabric-zookeeper
+    restart: always
+    environment:
+      - ZOO_MY_ID=3
+      - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+    ports:
+      - '2181'
+      - '2888'
+      - '3888'
+    networks:
+      - omarket
+
+  kafka0:
+    image: hyperledger/fabric-kafka
+    restart: always
+    environment:
+      - KAFKA_BORKER_ID=0
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+      - KAFKA_MESSAGE_MAX_BYTES=103809024 # 99 * 1024 *1024 B
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024
+      - KAFKA_UNCLEAN_LEADER_LECTION_ENABLE=false
+    ports:
+      - '19092:9092'
+    depends_on:
+      - zookeeper0
+      - zookeeper1
+      - zookeeper2
+    networks:
+      - omarket
+
+  kafka1:
+    image: hyperledger/fabric-kafka
+    restart: always
+    environment:
+      - KAFKA_BORKER_ID=1
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+      - KAFKA_MESSAGE_MAX_BYTES=103809024 # 99 * 1024 *1024 B
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024
+      - KAFKA_UNCLEAN_LEADER_LECTION_ENABLE=false
+    ports:
+      - '19093:9092'
+    depends_on:
+      - zookeeper0
+      - zookeeper1
+      - zookeeper2
+    networks:
+      - omarket
+
+  kafka2:
+    image: hyperledger/fabric-kafka
+    restart: always
+    environment:
+      - KAFKA_BORKER_ID=2
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+      - KAFKA_MESSAGE_MAX_BYTES=103809024 # 99 * 1024 *1024 B
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024
+      - KAFKA_UNCLEAN_LEADER_LECTION_ENABLE=false
+    ports:
+      - '19094:9092'
+    depends_on:
+      - zookeeper0
+      - zookeeper1
+      - zookeeper2
+    networks:
+      - omarket
+
+  kafka3:
+    image: hyperledger/fabric-kafka
+    restart: always
+    environment:
+      - KAFKA_BORKER_ID=3
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+      - KAFKA_MESSAGE_MAX_BYTES=103809024 # 99 * 1024 *1024 B
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024
+      - KAFKA_UNCLEAN_LEADER_LECTION_ENABLE=false
+    ports:
+      - '19095:9092'
+    depends_on:
+      - zookeeper0
+      - zookeeper1
+      - zookeeper2
+    networks:
+      - omarket
+
+  orderer.omarket.com:
+    container_name: orderer.omarket.com
+    image: hyperledger/fabric-orderer
+    environment:
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_KAFKA_RETRY_SHORTINTERVAL=1s
+      - ORDERER_KAFKA_RETRY_SHORTTOTAL=30s
+      - ORDERER_KAFKA_VERBOSE=true
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/artifacts/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OmarketMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+    volumes:
+      - ./channel-artifacts:/var/hyperledger/orderer/artifacts
+      - ./crypto-config/ordererOrganizations/omarket.com/orderers/orderer.omarket.com/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/omarket.com/orderers/orderer.omarket.com/tls:/var/hyperledger/orderer/tls
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+    command: orderer
+    ports:
+      - '7050:7050'
+    depends_on:
+      - zookeeper0
+      - zookeeper1
+      - zookeeper2
+      - kafka0
+      - kafka1
+      - kafka2
+      - kafka3
+    networks:
+      - omarket
+
+  peer0.store1.omarket.com:
+    container_name: peer0.store1.omarket.com
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      #- CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_byfn
+      - CORE_PEER_ADDRESSAUTODETECT=true
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_NETWORKID=dev
+      - CORE_PEER_TLS_ENABLED=true
+      # This disables mutual auth for gossip
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_ID=peer0.store1.omarket.com
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.store1.omarket.com:7051
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_PEER_LOCALMSPID=Store1MSP
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+    ports:
+      - '7051:7051'
+      - '7053:7053'
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./crypto-config/peerOrganizations/store1.omarket.com/peers/peer0.store1.omarket.com/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/store1.omarket.com/peers/peer0.store1.omarket.com/tls:/etc/hyperledger/fabric/tls
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    depends_on:
+      - orderer.omarket.com 
+    networks:
+      - omarket
+    command: peer node start
+
+  peer1.store1.omarket.com:
+    container_name: peer1.store1.omarket.com
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      #- CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_byfn
+      - CORE_PEER_ADDRESSAUTODETECT=true
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_NETWORKID=dev
+      - CORE_PEER_TLS_ENABLED=true
+      # This disables mutual auth for gossip
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_ID=peer1.store1.omarket.com
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.store1.omarket.com:7051
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_PEER_LOCALMSPID=Store1MSP
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+    ports:
+      - '27051:7051'
+      - '27053:7053'
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./crypto-config/peerOrganizations/store1.omarket.com/peers/peer1.store1.omarket.com/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/store1.omarket.com/peers/peer1.store1.omarket.com/tls:/etc/hyperledger/fabric/tls
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    depends_on:
+      - orderer.omarket.com 
+      - peer0.store1.omarket.com
+    networks:
+      - omarket
+    command: peer node start
+
+  peer0.store2.omarket.com:
+    container_name: peer0.store2.omarket.com
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      #- CORE_VM_DOCKER_HOSTCOFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_byfn
+      - CORE_PEER_ADDRESSAUTODETECT=true
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_NETWORKID=dev
+      - CORE_PEER_TLS_ENABLED=true
+      # This disables mutual auth for gossip
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_ID=peer0.store2.omarket.com
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.store2.omarket.com:7051
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_PEER_LOCALMSPID=Store2MSP
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+    ports:
+      - '37051:7051'
+      - '37053:7053'
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./crypto-config/peerOrganizations/store2.omarket.com/peers/peer0.store2.omarket.com/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/store2.omarket.com/peers/peer0.store2.omarket.com/tls:/etc/hyperledger/fabric/tls
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    depends_on:
+      - orderer.omarket.com 
+    networks:
+      - omarket
+    command: peer node start
+
+  peer1.store2.omarket.com:
+    container_name: peer1.store2.omarket.com
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      #- CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_byfn
+      - CORE_PEER_ADDRESSAUTODETECT=true
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_NETWORKID=dev
+      - CORE_PEER_TLS_ENABLED=true
+      # This disables mutual auth for gossip
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_ID=peer1.store2.omarket.com
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.store2.omarket.com:7051
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_PEER_LOCALMSPID=Store2MSP
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+    ports:
+      - '47051:7051'
+      - '47053:7053'
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./crypto-config/peerOrganizations/store2.omarket.com/peers/peer1.store2.omarket.com/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/store2.omarket.com/peers/peer1.store2.omarket.com/tls:/etc/hyperledger/fabric/tls
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    depends_on:
+      - orderer.omarket.com 
+      - peer0.store2.omarket.com
+    networks:
+      - omarket
+    command: peer node start
+
+#  eventsclient:
+#    container_name: eventsclient
+#    image: mjkong/eventsclient
+#    environment:
+#      - CORE_PEER_LOCALMSPID=Store1MSP
+#      - CORE_PEER_MSPCONFIGPATH=/root/crypto/msp
+#      - SERVER=peer0.store1.omarket.com:7051
+#      - CHNNELID=omarketcc
+#      - FILTERED=false
+#      - TLS=true
+#      - CLIENTKEY=/root/crypto/tls/client.key
+#      - CLIENTCERT=/root/crypto/tls/client.crt
+#      - ROOTCERT=/root/crypto/tls/ca.crt mjkong/eventsclient
+#    volumes:
+#      - /home/badm/omarket/crypto-config/peerOrganizations/store1.omarket.com/peers/peer0.store1.omarket.com/msp:/root/crypto/msp
+#      - /home/badm/omarket/crypto-config/peerOrganizations/store1.omarket.com/users/Admin@store1.omarket.com/tls:/root/crypto/tls
+#    networks:
+#      - omarket
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=DEBUG
+      #- CORE_LOGGING_LEVEL=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.store1.omarket.com:7051
+      - CORE_PEER_LOCALMSPID=Store1MSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/store1.omarket.com/peers/peer0.store1.omarket.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/store1.omarket.com/peers/peer0.store1.omarket.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/store1.omarket.com/peers/peer0.store1.omarket.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/store1.omarket.com/users/Admin@store1.omarket.com/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash #-c "scripts/scripts.sh omarketcc"
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./chaincode/:/opt/gopath/src/github.com/chaincode
+        - ./scripts/:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    depends_on:
+      - orderer.omarket.com 
+      - peer0.store1.omarket.com
+      - peer1.store1.omarket.com
+      - peer0.store2.omarket.com
+      - peer1.store2.omarket.com
+    networks:
+      - omarket

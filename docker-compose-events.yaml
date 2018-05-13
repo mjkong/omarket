@@ -1,0 +1,33 @@
+version: '2'
+
+#volumes:
+#  orderer.omarket.com:
+#  peer0.store1.omarket.com:
+#  peer1.store1.omarket.com:
+#  peer0.store2.omarket.com:
+#  peer1.store2.omarket.com:
+
+networks:
+  omarket:
+    external:
+      name: omarket_omarket
+
+services:
+  eventsclient:
+    container_name: eventsclient
+    image: mjkong/eventsclient
+    environment:
+      - CORE_PEER_LOCALMSPID=Store1MSP
+      - CORE_PEER_MSPCONFIGPATH=/root/crypto/msp
+      - SERVER=peer0.store1.omarket.com:7051
+      - CHANNELID=omarketcc
+      - FILTERED=false
+      - TLS=true
+      - CLIENTKEY=/root/crypto/tls/client.key
+      - CLIENTCERT=/root/crypto/tls/client.crt
+      - ROOTCERT=/root/crypto/tls/ca.crt
+    volumes:
+      - /home/badm/omarket/crypto-config/peerOrganizations/store1.omarket.com/peers/peer0.store1.omarket.com/msp:/root/crypto/msp
+      - /home/badm/omarket/crypto-config/peerOrganizations/store1.omarket.com/users/Admin@store1.omarket.com/tls:/root/crypto/tls
+    networks:
+      - omarket
