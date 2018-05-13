@@ -11,9 +11,9 @@ PATH=$PATH:$HOME/fabric-samples/bin
 
 ### 아티팩트 생성
 <pre><code>
+export FABRIC_CFG_PATH=$PWD
 configtxgen -profile TwoOrgsOrdererGenesis -outputBlock ./channel-artifacts/genesis.block
 
-export FABRIC_CFG_PATH=$PWD
 export CHANNEL_NAME=marketcc  && configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
 
 configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Store1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Store1MSP
