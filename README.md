@@ -2,6 +2,11 @@
 ### 우분투
 <pre><code>
 apt install g++
+cd $HOME
+curl -sSL https://goo.gl/6wtTN5 | bash -s 1.1.0
+
+$HOME/.profile 에 다음 추가
+PATH=$PATH:$HOME/fabric-samples/bin
 </code></pre>
 
 ### 아티팩트 생성
