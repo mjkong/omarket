@@ -11,7 +11,7 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.store1.omarket.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.store1.omarket.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/544f30c1916040bcdb6d08a8d46e40c792bb0df29db99959324fd62a38582bea_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/79a0842de89fa2de9b728277a3da8c7d38523e742befc8dc070c0d001f5b12fb_sk
     ports:
       - "17054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
@@ -27,7 +27,7 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.store2.omarket.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.store2.omarket.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/647a82d5e87584cb460befda48e753d3ee439384e1e78cb22cea3f2a6a077109_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/8de6f8cf23baeeeea91ab1d6abc421a9499d24e930d9ddee78915ddc9db53c9a_sk
     ports:
       - "27054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
@@ -43,7 +43,7 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.omarket.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.omarket.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/779cb38c67871e0b91f16fc619f7d680070e677ec316eb1b65685bd7f10352ed_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/c30d94cd2a003547e68a1088f508cfe49f2aec2f4ee7aa7420468f830f63d39c_sk
     ports:
       - "7054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
@@ -179,7 +179,7 @@ services:
     environment:
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_LOGLEVEL=debug
-      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_ENABLED=false
       - ORDERER_KAFKA_RETRY_SHORTINTERVAL=1s
       - ORDERER_KAFKA_RETRY_SHORTTOTAL=30s
       - ORDERER_KAFKA_VERBOSE=true
@@ -218,7 +218,7 @@ services:
       - CORE_PEER_ADDRESSAUTODETECT=true
       - CORE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_NETWORKID=dev
-      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_ENABLED=false
       # This disables mutual auth for gossip
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
       - CORE_PEER_GOSSIP_ORGLEADER=false
@@ -254,7 +254,7 @@ services:
       - CORE_PEER_ADDRESSAUTODETECT=true
       - CORE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_NETWORKID=dev
-      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_ENABLED=false
       # This disables mutual auth for gossip
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
       - CORE_PEER_GOSSIP_ORGLEADER=false
@@ -291,7 +291,7 @@ services:
       - CORE_PEER_ADDRESSAUTODETECT=true
       - CORE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_NETWORKID=dev
-      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_ENABLED=false
       # This disables mutual auth for gossip
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
       - CORE_PEER_GOSSIP_ORGLEADER=false
@@ -327,7 +327,7 @@ services:
       - CORE_PEER_ADDRESSAUTODETECT=true
       - CORE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_NETWORKID=dev
-      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_ENABLED=false
       # This disables mutual auth for gossip
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
       - CORE_PEER_GOSSIP_ORGLEADER=false
@@ -387,7 +387,7 @@ services:
       - CORE_PEER_ID=cli
       - CORE_PEER_ADDRESS=peer0.store1.omarket.com:7051
       - CORE_PEER_LOCALMSPID=Store1MSP
-      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_ENABLED=false
       - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/store1.omarket.com/peers/peer0.store1.omarket.com/tls/server.crt
       - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/store1.omarket.com/peers/peer0.store1.omarket.com/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/store1.omarket.com/peers/peer0.store1.omarket.com/tls/ca.crt

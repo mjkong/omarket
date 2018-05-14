@@ -23,6 +23,7 @@ var store_path = path.join(__dirname, 'hfc-key-store');
 var channel = null
 var peer = null;
 var order = null;
+var tx_id = null;
 
 
 app.get('/', (req, res) => {
@@ -137,10 +138,10 @@ app.post("/transaction/product", (req,res) => {
 			return res.status(400).json("Failed to get user");
     }
 		
-		var tx_id = fabric_client.newTransactionID();
+		tx_id = fabric_client.newTransactionID();
 		var request = {
 			chaincodeId : chaincodeId,
-			fcn: 'registProduct',
+			fcn: 'registProducts',
 			args: [productName, qty, owner],
 			chainId: channelName,
 			txId: tx_id
@@ -239,16 +240,53 @@ app.post("/transaction/product", (req,res) => {
 	});
 });
 
+app.get('/transaction/product/:id', (req,res) => {
+	var userID = req.params.id;
+
+	fabric_client.getUserContext(userID, true).then((user_from_store) => {
+     if(user_from_store && user_from_store.isEnrolled()){
+       console.log("Successfully loaded user from persistence");
+       member_user = user_from_store;
+     } else {
+       console.log("failed to get user");
+       return res.status(400).json("Failed to get user");
+     }
+		const request = {
+			chaincodeId: ca_config.chaincodeid,
+			fcn: 'getProductList',
+			args: ['']
+		};
+
+
+     return channel.queryByChaincode(request);
+   }).then((query_responses) => {
+        console.log("Query has completed, checking results");
+        // query_responses could have more than one  results if there multiple peers were used as targets
+        if (query_responses && query_responses.length == 1) {
+                if (query_responses[0] instanceof Error) {
+			return res.status(500).json("error from query = ", query_responses[0]);
+               } else {
+			return res.status(200).json(query_responses[0].toString());
+                }
+        } else {
+			return res.status(500).json("No payloads were returned from query");
+        }
+   }).catch((err) => {
+			return res.status(500).json('Failed to query successfully :: ' + err);
+   });
+
+}); 
+
 app.listen(3001, () => {
 
 	channel = fabric_client.newChannel(ca_config.channel_name);
 	peer = fabric_client.newPeer(ca_config.peer_url);
 	channel.addPeer(peer);
 	order = fabric_client.newOrderer(ca_config.orderer_url);
-  channel.addOrderer(order);
+	channel.addOrderer(order);
 
-  Fabric_Client.newDefaultKeyValueStore({ path: store_path
-}).then((state_store) => {
+	Fabric_Client.newDefaultKeyValueStore({ path: store_path
+  }).then((state_store) => {
     // assign the store to the fabric client
     fabric_client.setStateStore(state_store);
     var crypto_suite = Fabric_Client.newCryptoSuite();
