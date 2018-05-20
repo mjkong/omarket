@@ -16,6 +16,7 @@ cryptogen generate --config=./crypto-config.yaml
 
 ### 아티팩트 생성
 <pre><code>
+mkdir channel-artifacts
 export FABRIC_CFG_PATH=$PWD
 export CHANNEL_NAME=omarketchannel
 configtxgen -profile TwoOrgsOrdererGenesis -outputBlock ./channel-artifacts/genesis.block
