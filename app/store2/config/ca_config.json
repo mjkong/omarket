@@ -3,7 +3,7 @@
 	"ca_admin_id"	: "admin",
 	"mspId"	: "Store2MSP",
 	"channel_name" : "omarketchannel",
-	"orderer_url" : "grpc://localhost:7050",
+	"orderer_url" : "grpc://localhost:27050",
 	"peer_url" : "grpc://localhost:37051",
 	"event_url" : "grpc://localhost:37053",
 	"chaincodeid" : "marketcc"

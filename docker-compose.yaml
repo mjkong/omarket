@@ -11,7 +11,7 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.store1.omarket.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.store1.omarket.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/79a0842de89fa2de9b728277a3da8c7d38523e742befc8dc070c0d001f5b12fb_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/a574f755525ac5f1f2b833cae1bbde15f1ec649a67cba307a8b93bc2bd83b589_sk
     ports:
       - "17054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
@@ -27,7 +27,7 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.store2.omarket.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.store2.omarket.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/8de6f8cf23baeeeea91ab1d6abc421a9499d24e930d9ddee78915ddc9db53c9a_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/d86d27ba98bdda7d421f6cb252340e02628935bacb89d3553219260291c807b0_sk
     ports:
       - "27054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
@@ -43,7 +43,7 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.omarket.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.omarket.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/c30d94cd2a003547e68a1088f508cfe49f2aec2f4ee7aa7420468f830f63d39c_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/d72c30120ddf21b5f8befe8eb6df3b259b92577d361b1f3b338a764a311d844b_sk
     ports:
       - "7054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
@@ -173,8 +173,8 @@ services:
     networks:
       - omarket
 
-  orderer.omarket.com:
-    container_name: orderer.omarket.com
+  orderer0.omarket.com:
+    container_name: orderer0.omarket.com
     image: hyperledger/fabric-orderer
     environment:
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
@@ -192,12 +192,85 @@ services:
       - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
     volumes:
       - ./channel-artifacts:/var/hyperledger/orderer/artifacts
-      - ./crypto-config/ordererOrganizations/omarket.com/orderers/orderer.omarket.com/msp:/var/hyperledger/orderer/msp
-      - ./crypto-config/ordererOrganizations/omarket.com/orderers/orderer.omarket.com/tls:/var/hyperledger/orderer/tls
+      - ./crypto-config/ordererOrganizations/omarket.com/orderers/orderer0.omarket.com/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/omarket.com/orderers/orderer0.omarket.com/tls:/var/hyperledger/orderer/tls
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
     command: orderer
     ports:
       - '7050:7050'
+    depends_on:
+      - zookeeper0
+      - zookeeper1
+      - zookeeper2
+      - kafka0
+      - kafka1
+      - kafka2
+      - kafka3
+    networks:
+      - omarket
+
+  orderer1.omarket.com:
+    container_name: orderer1.omarket.com
+    image: hyperledger/fabric-orderer
+    environment:
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_TLS_ENABLED=false
+      - ORDERER_KAFKA_RETRY_SHORTINTERVAL=1s
+      - ORDERER_KAFKA_RETRY_SHORTTOTAL=30s
+      - ORDERER_KAFKA_VERBOSE=true
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/artifacts/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OmarketMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+    volumes:
+      - ./channel-artifacts:/var/hyperledger/orderer/artifacts
+      - ./crypto-config/ordererOrganizations/omarket.com/orderers/orderer1.omarket.com/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/omarket.com/orderers/orderer1.omarket.com/tls:/var/hyperledger/orderer/tls
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+    command: orderer
+    ports:
+      - '17050:7050'
+    depends_on:
+      - zookeeper0
+      - zookeeper1
+      - zookeeper2
+      - kafka0
+      - kafka1
+      - kafka2
+      - kafka3
+    networks:
+      - omarket
+
+
+  orderer2.omarket.com:
+    container_name: orderer2.omarket.com
+    image: hyperledger/fabric-orderer
+    environment:
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_TLS_ENABLED=false
+      - ORDERER_KAFKA_RETRY_SHORTINTERVAL=1s
+      - ORDERER_KAFKA_RETRY_SHORTTOTAL=30s
+      - ORDERER_KAFKA_VERBOSE=true
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/artifacts/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OmarketMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+    volumes:
+      - ./channel-artifacts:/var/hyperledger/orderer/artifacts
+      - ./crypto-config/ordererOrganizations/omarket.com/orderers/orderer2.omarket.com/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/omarket.com/orderers/orderer2.omarket.com/tls:/var/hyperledger/orderer/tls
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+    command: orderer
+    ports:
+      - '27050:7050'
     depends_on:
       - zookeeper0
       - zookeeper1
@@ -239,8 +312,6 @@ services:
       - ./crypto-config/peerOrganizations/store1.omarket.com/peers/peer0.store1.omarket.com/msp:/etc/hyperledger/fabric/msp
       - ./crypto-config/peerOrganizations/store1.omarket.com/peers/peer0.store1.omarket.com/tls:/etc/hyperledger/fabric/tls
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    depends_on:
-      - orderer.omarket.com 
     networks:
       - omarket
     command: peer node start
@@ -275,9 +346,6 @@ services:
       - ./crypto-config/peerOrganizations/store1.omarket.com/peers/peer1.store1.omarket.com/msp:/etc/hyperledger/fabric/msp
       - ./crypto-config/peerOrganizations/store1.omarket.com/peers/peer1.store1.omarket.com/tls:/etc/hyperledger/fabric/tls
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    depends_on:
-      - orderer.omarket.com 
-      - peer0.store1.omarket.com
     networks:
       - omarket
     command: peer node start
@@ -312,8 +380,6 @@ services:
       - ./crypto-config/peerOrganizations/store2.omarket.com/peers/peer0.store2.omarket.com/msp:/etc/hyperledger/fabric/msp
       - ./crypto-config/peerOrganizations/store2.omarket.com/peers/peer0.store2.omarket.com/tls:/etc/hyperledger/fabric/tls
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    depends_on:
-      - orderer.omarket.com 
     networks:
       - omarket
     command: peer node start
@@ -348,9 +414,6 @@ services:
       - ./crypto-config/peerOrganizations/store2.omarket.com/peers/peer1.store2.omarket.com/msp:/etc/hyperledger/fabric/msp
       - ./crypto-config/peerOrganizations/store2.omarket.com/peers/peer1.store2.omarket.com/tls:/etc/hyperledger/fabric/tls
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    depends_on:
-      - orderer.omarket.com 
-      - peer0.store2.omarket.com
     networks:
       - omarket
     command: peer node start
@@ -400,11 +463,5 @@ services:
         - ./scripts/:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts
         - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
         - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
-    depends_on:
-      - orderer.omarket.com 
-      - peer0.store1.omarket.com
-      - peer1.store1.omarket.com
-      - peer0.store2.omarket.com
-      - peer1.store2.omarket.com
     networks:
       - omarket

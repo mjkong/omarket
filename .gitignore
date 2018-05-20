@@ -1,9 +1,7 @@
 /bin
 .DS_Store
 .project
-
-crypto-config
-channel-artifacts/*
+*.bak
 app/main/node_modules/
 app/main/package-lock.json
 app/main/hfc-key-store/

@@ -110,7 +110,9 @@ Orderer: &OrdererDefaults
     OrdererType: kafka
 
     Addresses:
-        - orderer.omarket.com:7050 
+        - orderer0.omarket.com:7050 
+        - orderer1.omarket.com:7050
+        - orderer2.omarket.com:7050
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 2s
