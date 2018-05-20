@@ -9,6 +9,11 @@ $HOME/.profile 에 다음 추가
 PATH=$PATH:$HOME/fabric-samples/bin
 </code></pre>
 
+### TLS 인증서 생성
+<pre><code>
+cryptogen generate --config=./crypto-config.yaml
+</code></pre>
+
 ### 아티팩트 생성
 <pre><code>
 export FABRIC_CFG_PATH=$PWD
